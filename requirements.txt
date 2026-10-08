@@ -1,0 +1,8 @@
+Django>=4.2,<5.1
+Pillow>=10.0
+scikit-learn>=1.3
+joblib>=1.3
+numpy>=1.26
+
+# Optional: only needed if you switch SEVERITY_ENGINE to "gemini" in hostel_ai/settings.py
+# google-generativeai>=0.5

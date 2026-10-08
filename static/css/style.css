@@ -1,0 +1,13 @@
+body {
+    background-color: #f4f6f9;
+}
+.card {
+    border: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.badge-new {
+    background-color: #0d6efd;
+}
+.table thead {
+    background-color: #eef1f5;
+}

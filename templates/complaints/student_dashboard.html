@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard · Hostel AI{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-5">
+        <div class="card p-4 mb-4">
+            <h5 class="mb-3">📝 Submit a Complaint</h5>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Title</label>
+                    {{ form.title }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Upload photo (optional)</label>
+                    {{ form.image }}
+                </div>
+                <button class="btn btn-primary w-100" type="submit">Submit Complaint</button>
+                <p class="text-muted small mt-2 mb-0">Severity is predicted automatically by AI right after you submit.</p>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <h5 class="mb-3">📋 My Complaints</h5>
+        {% for c in complaints %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="badge bg-primary">My Complaint</span>
+                        <a href="{% url 'complaints:complaint_detail' c.pk %}" class="fw-semibold ms-1 text-decoration-none">{{ c.title }}</a>
+                    </div>
+                    <div>
+                        <span class="badge {{ c.severity_badge_class }}">{{ c.get_severity_display }}</span>
+                        <span class="badge {{ c.status_badge_class }}">{{ c.get_status_display }}</span>
+                    </div>
+                </div>
+                <p class="text-muted mb-1 mt-2">{{ c.description|truncatewords:20 }}</p>
+                <small class="text-muted">Submitted {{ c.created_at|timesince }} ago · Room {{ c.room_number }}</small>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">You haven't submitted any complaints yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

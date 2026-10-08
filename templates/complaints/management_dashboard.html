@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Management Dashboard · Hostel AI{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card p-3 text-center">
+            <div class="text-muted small">Total Complaints</div>
+            <div class="fs-3 fw-bold">{{ total }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 text-center">
+            <div class="text-muted small">Resolved</div>
+            <div class="fs-3 fw-bold text-success">{{ resolved }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <canvas id="severityChart" height="90"></canvas>
+    </div>
+    <div class="col-md-3">
+        <canvas id="statusChart" height="90"></canvas>
+    </div>
+</div>
+
+<h5 class="mb-3">📋 All Complaints</h5>
+<div class="table-responsive">
+<table class="table table-hover bg-white align-middle">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Title</th>
+            <th>Student</th>
+            <th>Room</th>
+            <th>Severity</th>
+            <th>Status</th>
+            <th>Assigned Warden</th>
+            <th>Submitted</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in complaints %}
+        <tr>
+            <td>
+                <span class="badge {% if c.label_for_display == 'New Complaint' %}bg-primary{% else %}bg-secondary{% endif %}">
+                    {{ c.label_for_display }}
+                </span>
+            </td>
+            <td>{{ c.title }}</td>
+            <td>{{ c.student.get_full_name|default:c.student.username }}</td>
+            <td>{{ c.room_number }}</td>
+            <td><span class="badge {{ c.severity_badge_class }}">{{ c.get_severity_display }}</span></td>
+            <td><span class="badge {{ c.status_badge_class }}">{{ c.get_status_display }}</span></td>
+            <td>{{ c.assigned_warden.get_full_name|default:"—" }}</td>
+            <td class="small text-muted">{{ c.created_at|timesince }} ago</td>
+            <td><a href="{% url 'complaints:complaint_detail' c.pk %}" class="btn btn-sm btn-outline-primary">Open</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" class="text-muted text-center py-4">No complaints yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+    const chartData = JSON.parse('{{ chart_data_json|escapejs }}');
+
+    new Chart(document.getElementById('severityChart'), {
+        type: 'doughnut',
+        data: {
+            labels: chartData.severity.labels,
+            datasets: [{
+                data: chartData.severity.values,
+                backgroundColor: ['#dc3545', '#ffc107', '#198754'],
+            }],
+        },
+        options: { plugins: { title: { display: true, text: 'By Severity' } }, maintainAspectRatio: false },
+    });
+
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: chartData.status.labels,
+            datasets: [{
+                data: chartData.status.values,
+                backgroundColor: ['#6c757d', '#0dcaf0', '#198754'],
+            }],
+        },
+        options: { plugins: { title: { display: true, text: 'By Status' } }, maintainAspectRatio: false },
+    });
+</script>
+{% endblock %}

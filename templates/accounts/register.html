@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Register · Hostel AI{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <div class="card p-4">
+            <h3 class="mb-3 text-center">Create your Hostel AI account</h3>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">First name</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Last name</label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    {{ form.username }}
+                    {{ form.username.errors }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    {{ form.email }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone number</label>
+                    {{ form.phone_number }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Role</label>
+                    {{ form.role }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Room number <span class="text-muted">(students only)</span></label>
+                    {{ form.room_number }}
+                    {{ form.room_number.errors }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Department <span class="text-muted">(wardens only)</span></label>
+                    {{ form.department }}
+                    {{ form.department.errors }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Link parent account <span class="text-muted">(students, optional)</span></label>
+                    {{ form.parent }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    {{ form.password1 }}
+                    {{ form.password1.errors }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Confirm password</label>
+                    {{ form.password2 }}
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+            <p class="text-center mt-3 mb-0">
+                Already have an account? <a href="{% url 'accounts:login' %}">Login</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

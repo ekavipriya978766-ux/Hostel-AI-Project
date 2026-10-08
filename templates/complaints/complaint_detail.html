@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}{{ complaint.title }} · Hostel AI{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-7">
+        <div class="card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h4>{{ complaint.title }}</h4>
+                <div>
+                    <span class="badge {{ complaint.severity_badge_class }}">{{ complaint.get_severity_display }}</span>
+                    <span class="badge {{ complaint.status_badge_class }}">{{ complaint.get_status_display }}</span>
+                </div>
+            </div>
+            <p>{{ complaint.description }}</p>
+            {% if complaint.image %}
+                <img src="{{ complaint.image.url }}" class="img-fluid rounded mb-3" style="max-height:320px;object-fit:cover;" alt="Complaint photo">
+            {% endif %}
+            <ul class="list-unstyled small text-muted mb-0">
+                <li>Room: {{ complaint.room_number }}</li>
+                {% if user.is_management or user.is_superuser %}
+                    <li>Filed by: {{ complaint.student.get_full_name|default:complaint.student.username }}</li>
+                    <li>Assigned warden: {{ complaint.assigned_warden.get_full_name|default:"Unassigned" }}</li>
+                {% endif %}
+                <li>Submitted: {{ complaint.created_at }}</li>
+                {% if complaint.resolved_at %}<li>Resolved: {{ complaint.resolved_at }}</li>{% endif %}
+            </ul>
+        </div>
+
+        {% if status_form %}
+        <div class="card p-4 mb-4">
+            <h6 class="mb-3">Update Status</h6>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ status_form.status }}
+                </div>
+                <div class="mb-3">
+                    {{ status_form.note }}
+                </div>
+                <button type="submit" class="btn btn-primary">Save Update</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-5">
+        <div class="card p-4">
+            <h6 class="mb-3">🕓 Complaint History</h6>
+            <ul class="list-group list-group-flush">
+                {% for h in history %}
+                <li class="list-group-item px-0">
+                    <div class="fw-semibold">{{ h.get_new_status_display }}</div>
+                    {% if h.note %}<div class="small">{{ h.note }}</div>{% endif %}
+                    <div class="small text-muted">
+                        {% if h.changed_by %}by {{ h.changed_by.get_full_name|default:h.changed_by.username }} ·{% endif %}
+                        {{ h.created_at|timesince }} ago
+                    </div>
+                </li>
+                {% empty %}
+                <li class="list-group-item px-0 text-muted">No history yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
